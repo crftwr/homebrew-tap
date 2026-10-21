@@ -7,6 +7,12 @@ class Xefm < Formula
   sha256 "cad74309af8b1917bf828bb65207f86b088dbc31f8f22b63ca5f5bc700901c51"
   license "MIT"
 
+  bottle do
+    root_url "https://github.com/crftwr/homebrew-tap/releases/download/xefm-1.8.0"
+    sha256 cellar: :any_skip_relocation, arm64_tahoe:  "d9a3787aefc1460fcafc3dc1dca62ef0eb4b9a70907d9a2908f9f1fbad9a9641"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "1c9c958d5f6722a76253e5a9eb53588608f927c09b9e723f0c0ce3bb7fa151bd"
+  end
+
   depends_on "libarchive"
   depends_on "pillow"
   depends_on "python@3.14"
