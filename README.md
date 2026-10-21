@@ -1,6 +1,8 @@
 # crftwr/tap
 
-Homebrew tap for [XeFM](https://github.com/crftwr/xefm), a dual-pane file manager.
+Homebrew tap for [XeFM](https://github.com/crftwr/xefm), a dual-pane file manager,
+and [Keyhac](https://github.com/crftwr/keyhac), keyboard customization and UI
+automation in Python.
 
 ## XeFM
 
@@ -25,3 +27,15 @@ pipx install xefm && pipx inject xefm pillow-heif
 ```
 
 Both apps read the same `~/.xefm` configuration.
+
+## Keyhac
+
+```bash
+brew install --cask crftwr/tap/keyhac
+```
+
+Installs `Keyhac.app`, the notarized build from the
+[GitHub Releases](https://github.com/crftwr/keyhac/releases), for Apple silicon.
+A running Keyhac is quit before an upgrade replaces it. If you already have
+`Keyhac.app` in `/Applications` from the DMG, add `--adopt` to hand it over to
+Homebrew. `~/.keyhac` is never touched, not even by `--zap`.
