@@ -27,6 +27,14 @@ class Xefm < Formula
     end
   end
 
+  # pillow comes from its formula; those PyObjC frameworks serve only the
+  # desktop backend (the cask's job); the rest are Windows-only. PyObjC Core and
+  # Cocoa are kept by hand in the on_macos block above, which regeneration leaves alone.
+  pypi_packages exclude_packages: %w[
+    pillow pyobjc-framework-Quartz pyobjc-framework-Metal pyobjc-framework-CoreText
+    numpy windows-curses comtypes
+  ]
+
   resource "boto3" do
     url "https://files.pythonhosted.org/packages/0e/4a/b0ce191492a1724be73d8aacaf70d508bc8cbb9674c046d2ff7181dc51fb/boto3-1.43.115.tar.gz"
     sha256 "c0f35e5f9cdf0edb365195e306d5586d3970b224660a11a87a4ec361ec3d7168"
