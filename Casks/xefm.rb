@@ -1,6 +1,6 @@
 cask "xefm" do
-  version "1.8.0"
-  sha256 "663c6653808211e905dcdefdfda547228e09821742804d6e4cacf798419eb703"
+  version "1.9.0"
+  sha256 "93d862af9f11525c2a543ce173016b30c5320845ee957756be220ea1c569721c"
 
   url "https://github.com/crftwr/xefm/releases/download/v#{version}/XeFM-#{version}-macos.dmg"
   name "XeFM"
@@ -13,7 +13,7 @@ cask "xefm" do
   end
 
   depends_on arch: :arm64
-  depends_on :macos
+  depends_on macos: :monterey
 
   app "XeFM.app"
 
