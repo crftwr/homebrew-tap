@@ -1,0 +1,106 @@
+# Opens the formula's version-bump PR once its new sdist has been on PyPI for a
+# day. Release day cannot do it: `brew bump-formula-pr` resolves the Python
+# resources with `pip --uploaded-prior-to=P1D`, so a package uploaded in the
+# last 24 hours (the new xefm, and a PuiKit released with it) is invisible and
+# the bump fails. Rather than relying on someone to come back the next day,
+# this checks every six hours.
+#
+# It only opens the PR. The PR's own CI (tests.yml) builds the bottles, and
+# publishing them is still `brew pr-pull` (publish.yml), run by hand. Casks are
+# not bumped here: the release bumps them the same day, from the DMG.
+#
+# The PR is opened with HOMEBREW_TAP_BUMP_TOKEN, a fine-grained token for this
+# repository with Contents and Pull requests read/write. A PR opened with the
+# default GITHUB_TOKEN would not trigger tests.yml, so no bottles would exist.
+name: autobump
+
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash -xeuo pipefail {0}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      formulae: ${{ steps.check.outputs.formulae }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Which formulae are behind PyPI, by more than a day
+        id: check
+        run: |
+          python3 - <<'EOF'
+          import datetime, json, os, pathlib, re, urllib.request
+
+          # formula file -> PyPI project
+          FORMULAE = {"xefm": "xefm"}
+          due = []
+          for name, project in FORMULAE.items():
+              text = pathlib.Path(f"Formula/{name}.rb").read_text()
+              current = re.search(rf"/{project}-([0-9][^/]*?)\.tar\.gz", text).group(1)
+              with urllib.request.urlopen(f"https://pypi.org/pypi/{project}/json") as r:
+                  info = json.load(r)
+              latest = info["info"]["version"]
+              if latest == current:
+                  print(f"{name}: {current} is current")
+                  continue
+              sdist = [u for u in info["urls"] if u["packagetype"] == "sdist"]
+              if not sdist:
+                  print(f"{name}: {latest} has no sdist yet")
+                  continue
+              uploaded = datetime.datetime.fromisoformat(
+                  sdist[0]["upload_time_iso_8601"].replace("Z", "+00:00"))
+              age = datetime.datetime.now(datetime.timezone.utc) - uploaded
+              if age < datetime.timedelta(hours=24, minutes=30):
+                  print(f"{name}: {latest} is only {age} old; Homebrew will not "
+                        f"resolve it before 24 h — a later run bumps it")
+                  continue
+              print(f"{name}: {current} -> {latest} is due")
+              due.append(f"crftwr/tap/{name}")
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write(f"formulae={' '.join(due)}\n")
+          EOF
+
+  bump:
+    needs: check
+    if: needs.check.outputs.formulae != ''
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/homebrew/brew:main # zizmor: ignore[unpinned-images]
+    permissions:
+      contents: read
+    steps:
+      - name: Require the bump token
+        env:
+          TOKEN: ${{ secrets.HOMEBREW_TAP_BUMP_TOKEN }}
+        run: |
+          if [[ -z "$TOKEN" ]]; then
+            echo "::error::Set the HOMEBREW_TAP_BUMP_TOKEN secret (see the top of autobump.yml)"
+            exit 1
+          fi
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
+        with:
+          token: ${{ secrets.HOMEBREW_TAP_BUMP_TOKEN }}
+
+      - name: Set up git
+        uses: Homebrew/actions/git-user-config@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
+
+      - name: Open the bump PR
+        uses: Homebrew/actions/bump-packages@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
+        with:
+          token: ${{ secrets.HOMEBREW_TAP_BUMP_TOKEN }}
+          formulae: ${{ needs.check.outputs.formulae }}
+          fork: false
