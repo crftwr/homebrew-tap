@@ -3,8 +3,8 @@ class Xefm < Formula
 
   desc "Dual-pane file manager for the terminal"
   homepage "https://github.com/crftwr/xefm"
-  url "https://files.pythonhosted.org/packages/d0/54/594d074aa776bad78e9aa7b3d36b52277755008feec0d17bae6c8e684851/xefm-1.8.0.tar.gz"
-  sha256 "cad74309af8b1917bf828bb65207f86b088dbc31f8f22b63ca5f5bc700901c51"
+  url "https://files.pythonhosted.org/packages/c8/8b/7f62bbe8d18ce3de03d32535f06dea930c429db3ed2ead653ab1a7e18298/xefm-1.10.0.tar.gz"
+  sha256 "ab814f4f59610fcbb3a4d006813f06498a0956f69a345ba9700e0c1faf742cdf"
   license "MIT"
 
   bottle do
@@ -42,13 +42,13 @@ class Xefm < Formula
   ]
 
   resource "boto3" do
-    url "https://files.pythonhosted.org/packages/0e/4a/b0ce191492a1724be73d8aacaf70d508bc8cbb9674c046d2ff7181dc51fb/boto3-1.43.115.tar.gz"
-    sha256 "c0f35e5f9cdf0edb365195e306d5586d3970b224660a11a87a4ec361ec3d7168"
+    url "https://files.pythonhosted.org/packages/96/8b/5694c8433b5202f34a82def4edee274f7df1eba2919c66d9d389d2202ec8/boto3-1.43.118.tar.gz"
+    sha256 "c0620f799e0f0c222ba42c337b65cdbcd3da38a3121187f634d8926cbbb28a9c"
   end
 
   resource "botocore" do
-    url "https://files.pythonhosted.org/packages/6f/10/ca525e88db50f5153ddad2a3d55908b5ace915d10f443d5e5135ba808d8d/botocore-1.43.115.tar.gz"
-    sha256 "aa4d9c4e7ef99988b7347e0cd276ba84e1eb1625510557b0e36cd57ecb19bbf2"
+    url "https://files.pythonhosted.org/packages/d4/b8/3e55154ddaf1a6d1d4ddda85c0e5983205a3b7657edacd8ebba8c6fd774c/botocore-1.43.118.tar.gz"
+    sha256 "7f3f9d88cc9e847587690f82a42e3c3c292c3026c92c1e60d68a9310018e003f"
   end
 
   resource "doc-files" do
@@ -67,8 +67,8 @@ class Xefm < Formula
   end
 
   resource "puikit" do
-    url "https://files.pythonhosted.org/packages/47/ca/7c79685244b07b1206626b0dcdfa940ee18f072f6b89e733df01f8951010/puikit-1.11.1.tar.gz"
-    sha256 "096a5a9c37a4a513cebc579632ecad06bf7b9b4d47cbd01fda8cefcfdea95a36"
+    url "https://files.pythonhosted.org/packages/82/85/fc5f2af26cd18c2e7442cc54490e877baa8f10c913902dbd9af0f5e264ef/puikit-1.14.0.tar.gz"
+    sha256 "4d67e60c3c84c657633b572716d5fcadd2bc2257a672b1f5d97a31a2d08f1de5"
   end
 
   resource "pygments" do
@@ -82,8 +82,8 @@ class Xefm < Formula
   end
 
   resource "pypdf" do
-    url "https://files.pythonhosted.org/packages/51/e1/32a9c4dbd94618145f8bab5c623bdb0a528f23fc8719afd77ba0278fd377/pypdf-6.21.1.tar.gz"
-    sha256 "2d62c383acd6e0dff0a96322ba8b1135229343b084d73c6f6cfd947fd291afcb"
+    url "https://files.pythonhosted.org/packages/06/28/081f1cbcca7042441dafc8de00f48ba60853f89e5bff92c5f26477346d81/pypdf-6.21.2.tar.gz"
+    sha256 "0a3e1c5c886a1be03646c16a04827cc166c2a0575c971b26a4bf89686551c2d4"
   end
 
   resource "python-dateutil" do
