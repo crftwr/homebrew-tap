@@ -84,9 +84,10 @@ jobs:
           if grep -q '^Formula/' <<<"$files"; then
             # Merging with the button publishes no bottles: brew pr-pull merges
             # the PR itself and adds the bottle block.
-            body="$(printf '@%s Bottles are built. Publish them with `brew pr-pull`, which also merges this PR, so do not press Merge:\n\n```\ngh workflow run publish.yml -R %s -f pull_request=%s -f head_sha=%s\n```\n' \
-              "$OWNER" "$GH_REPO" "$PR" "$HEAD_SHA")"
+            nl=$'\n'
+            fence="\`\`\`"
+            body="@$OWNER Bottles are built. Publish them with \`brew pr-pull\`, which also merges this PR, so do not press Merge:${nl}${nl}${fence}${nl}gh workflow run publish.yml -R $GH_REPO -f pull_request=$PR -f head_sha=$HEAD_SHA${nl}${fence}"
           else
-            body="$(printf '@%s Checks passed. No formula changed, so there are no bottles to publish: merge this PR.\n' "$OWNER")"
+            body="@$OWNER Checks passed. No formula changed, so there are no bottles to publish: merge this PR."
           fi
           gh pr comment "$PR" --body "$body"
