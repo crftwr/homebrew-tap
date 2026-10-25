@@ -8,9 +8,9 @@ class Xefm < Formula
   license "MIT"
 
   bottle do
-    root_url "https://github.com/crftwr/homebrew-tap/releases/download/xefm-1.8.0"
-    sha256 cellar: :any_skip_relocation, arm64_tahoe:  "d9a3787aefc1460fcafc3dc1dca62ef0eb4b9a70907d9a2908f9f1fbad9a9641"
-    sha256 cellar: :any_skip_relocation, x86_64_linux: "1c9c958d5f6722a76253e5a9eb53588608f927c09b9e723f0c0ce3bb7fa151bd"
+    root_url "https://github.com/crftwr/homebrew-tap/releases/download/xefm-1.10.0"
+    sha256 cellar: :any_skip_relocation, arm64_tahoe:  "383a29ef6cd6582bde19aab845c209c98b6c432bc6f6db71ec8d33581410f87e"
+    sha256 cellar: :any_skip_relocation, x86_64_linux: "65b535446ecd5a9227f77dc1585ff65447308acb4c575de31dba2f2032608480"
   end
 
   depends_on "libarchive"
