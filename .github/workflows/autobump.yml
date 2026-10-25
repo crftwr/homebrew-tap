@@ -5,6 +5,10 @@
 # the bump fails. Rather than relying on someone to come back the next day,
 # this checks every six hours.
 #
+# A bump whose PR is still open is left alone until that PR is merged: the
+# formula on main stays behind PyPI meanwhile, and a second bump-formula-pr
+# would only fail pushing over the open PR's branch.
+#
 # It only opens the PR. The PR's own CI (tests.yml) builds the bottles, and
 # publishing them is still `brew pr-pull` (publish.yml), run by hand. Casks are
 # not bumped here: the release bumps them the same day, from the DMG.
@@ -30,6 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pull-requests: read
     outputs:
       formulae: ${{ steps.check.outputs.formulae }}
     steps:
@@ -39,12 +44,27 @@ jobs:
 
       - name: Which formulae are behind PyPI, by more than a day
         id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         run: |
           python3 - <<'EOF'
           import datetime, json, os, pathlib, re, urllib.request
 
           # formula file -> PyPI project
           FORMULAE = {"xefm": "xefm"}
+
+          def open_pr(branch):
+              owner = os.environ["REPO"].split("/")[0]
+              req = urllib.request.Request(
+                  f"https://api.github.com/repos/{os.environ['REPO']}/pulls"
+                  f"?state=open&head={owner}:{branch}",
+                  headers={"Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                           "Accept": "application/vnd.github+json"})
+              with urllib.request.urlopen(req) as r:
+                  pulls = json.load(r)
+              return pulls[0]["html_url"] if pulls else None
+
           due = []
           for name, project in FORMULAE.items():
               text = pathlib.Path(f"Formula/{name}.rb").read_text()
@@ -65,6 +85,12 @@ jobs:
               if age < datetime.timedelta(hours=24, minutes=30):
                   print(f"{name}: {latest} is only {age} old; Homebrew will not "
                         f"resolve it before 24 h — a later run bumps it")
+                  continue
+              # The name bump-formula-pr pushes to. The release-day cask bump
+              # uses the same one, so an open cask PR also waits this out.
+              pr = open_pr(f"bump-{name}-{latest}")
+              if pr:
+                  print(f"{name}: {latest} already has an open PR, {pr}")
                   continue
               print(f"{name}: {current} -> {latest} is due")
               due.append(f"crftwr/tap/{name}")
