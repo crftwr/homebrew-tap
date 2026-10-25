@@ -87,7 +87,10 @@ jobs:
             nl=$'\n'
             fence="\`\`\`"
             body="@$OWNER Bottles are built. Publish them with \`brew pr-pull\`, which also merges this PR, so do not press Merge:${nl}${nl}${fence}${nl}gh workflow run publish.yml -R $GH_REPO -f pull_request=$PR -f head_sha=$HEAD_SHA${nl}${fence}"
-          else
+          elif grep -q '^Casks/' <<<"$files"; then
             body="@$OWNER Checks passed. No formula changed, so there are no bottles to publish: merge this PR."
+          else
+            echo "No formula or cask changed: not a package bump, nothing to say"
+            exit 0
           fi
           gh pr comment "$PR" --body "$body"
