@@ -9,8 +9,8 @@ on:
         required: true
       head_sha:
         description: Expected pull request head commit SHA (optional)
-      no_cherry_pick:
-        description: The PR is already merged (with the button); only add its bottles
+      already_merged:
+        description: The PR is already merged (with the button); only publish its bottles
         type: boolean
         default: false
 
@@ -43,31 +43,66 @@ jobs:
 
       - name: Pull bottles
         id: pull_bottles
+        if: ${{ !inputs.already_merged }}
         env:
           HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HOMEBREW_GIT_COMMITTER_NAME: ${{ steps.git_setup.outputs.name }}
           HOMEBREW_GIT_COMMITTER_EMAIL: ${{ steps.git_setup.outputs.email }}
           HEAD_SHA: ${{ inputs.head_sha }}
           PULL_REQUEST: ${{ inputs.pull_request }}
-          NO_CHERRY_PICK: ${{ inputs.no_cherry_pick }}
         run: |
-          args=(--debug --retain-bottle-dir --tap="$GITHUB_REPOSITORY")
           if [[ -n "$HEAD_SHA" ]]
           then
-            args+=(--head-sha="$HEAD_SHA")
+            brew pr-pull --debug --retain-bottle-dir --tap="$GITHUB_REPOSITORY" --head-sha="$HEAD_SHA" \
+              "$PULL_REQUEST"
+          else
+            brew pr-pull --debug --retain-bottle-dir --tap="$GITHUB_REPOSITORY" "$PULL_REQUEST"
           fi
-          # A PR merged with the button already has its commits on main, and
-          # cherry-picking them again fails; this adds only the bottle commit.
-          if [[ "$NO_CHERRY_PICK" == true ]]
+
+      # A PR merged with the button has its commits on main but no bottles.
+      # pr-pull cannot recover it: cherry-picking fails, and --no-cherry-pick
+      # diffs main against itself (so it finds no formula to bottle) and amends
+      # main's own tip. Instead, do what pr-pull does after its cherry-pick:
+      # fetch the PR's test-bot bottles and hand them to pr-upload, which
+      # commits the bottle block on main and uploads the bottles.
+      - name: Publish the bottles of a merged PR
+        id: upload_merged
+        if: ${{ inputs.already_merged }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HOMEBREW_GIT_COMMITTER_NAME: ${{ steps.git_setup.outputs.name }}
+          HOMEBREW_GIT_COMMITTER_EMAIL: ${{ steps.git_setup.outputs.email }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          PULL_REQUEST: ${{ inputs.pull_request }}
+        run: |
+          if [[ "$(gh pr view "$PULL_REQUEST" --json state -q .state)" != MERGED ]]
           then
-            args+=(--no-cherry-pick)
+            echo "::error::#$PULL_REQUEST is not merged; publish it without already_merged"
+            exit 1
           fi
-          brew pr-pull "${args[@]}" "$PULL_REQUEST"
+          head_sha="${HEAD_SHA:-$(gh pr view "$PULL_REQUEST" --json headRefOid -q .headRefOid)}"
+          run_id="$(gh run list --workflow tests.yml --event pull_request --commit "$head_sha" \
+            --status success --limit 1 --json databaseId -q '.[0].databaseId')"
+          if [[ -z "$run_id" ]]
+          then
+            echo "::error::No successful test-bot run for $head_sha"
+            exit 1
+          fi
+          dir="$(mktemp -d)"
+          gh run download "$run_id" --pattern 'bottles_*' --dir "$dir/artifacts"
+          # pr-upload reads the bottles from the current directory, flat.
+          mv "$dir"/artifacts/*/* "$dir"/
+          rm -r "$dir/artifacts"
+          cd "$dir"
+          brew pr-upload --debug
+          echo "bottle_path=$dir" >> "$GITHUB_OUTPUT"
 
       - name: Generate build provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: "${{ steps.pull_bottles.outputs.bottle_path }}/*.tar.gz"
+          subject-path: "${{ steps.pull_bottles.outputs.bottle_path || steps.upload_merged.outputs.bottle_path }}/*.tar.gz"
 
       - name: Push commits
         uses: Homebrew/actions/git-try-push@848c272c7bfe984a197bd4d16383f4c106ec61e6 # 2026.09.21.1
