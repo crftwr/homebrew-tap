@@ -6,6 +6,7 @@ class Xefm < Formula
   url "https://files.pythonhosted.org/packages/c8/8b/7f62bbe8d18ce3de03d32535f06dea930c429db3ed2ead653ab1a7e18298/xefm-1.10.0.tar.gz"
   sha256 "ab814f4f59610fcbb3a4d006813f06498a0956f69a345ba9700e0c1faf742cdf"
   license "MIT"
+  revision 1
 
   bottle do
     root_url "https://github.com/crftwr/homebrew-tap/releases/download/xefm-1.10.0"
@@ -31,11 +32,20 @@ class Xefm < Formula
       url "https://files.pythonhosted.org/packages/75/76/49c6da2c6a831020b4854ba20079d5a1030474bffc776b7b73c2eeff8c15/pyobjc_framework_cocoa-12.2.2.tar.gz"
       sha256 "c96c0ef69a71afbbb0e6a7d594b455c5fe47d62e0db376ee7a2b4b828c16ace9"
     end
+
+    # HTTPS verified by Security.framework instead of OpenSSL against a CA
+    # file, with revocation checks (xefm#676). Its requirement is marked
+    # darwin/win32, so regeneration on Linux never sees it: kept by hand too.
+    resource "truststore" do
+      url "https://files.pythonhosted.org/packages/ee/9f/c5201d42a484c061e528825fc8e2d565f5abd50a4ced6fb7d29c4ec99b2b/truststore-0.10.5.tar.gz"
+      sha256 "30d36967ccaded5cbb38d602c433f53600036c79d502f4533a49b60a03bbefcd"
+    end
   end
 
   # pillow comes from its formula; those PyObjC frameworks serve only the
-  # desktop backend (the cask's job); the rest are Windows-only. PyObjC Core and
-  # Cocoa are kept by hand in the on_macos block above, which regeneration leaves alone.
+  # desktop backend (the cask's job); the rest are Windows-only. PyObjC Core,
+  # Cocoa and truststore are kept by hand in the on_macos block above, which
+  # regeneration leaves alone.
   pypi_packages exclude_packages: %w[
     pillow pyobjc-framework-Quartz pyobjc-framework-Metal pyobjc-framework-CoreText
     numpy windows-curses comtypes
