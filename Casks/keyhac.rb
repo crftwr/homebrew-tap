@@ -1,6 +1,6 @@
 cask "keyhac" do
-  version "2.6.0"
-  sha256 "d16a0530a69b859c0fce60abd49d701e4dc1f6f0d573931f13fdf46d06347d5d"
+  version "2.7.0"
+  sha256 "02d603fc7f87e5aba352d3f902fd60979199318c778caa98d72bcc61338d15b8"
 
   url "https://github.com/crftwr/keyhac/releases/download/v#{version}/Keyhac-#{version}-macos.dmg"
   name "Keyhac"
@@ -13,7 +13,7 @@ cask "keyhac" do
   end
 
   depends_on arch: :arm64
-  depends_on :macos
+  depends_on macos: :monterey
 
   app "Keyhac.app"
 
