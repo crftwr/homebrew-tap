@@ -9,6 +9,10 @@ on:
         required: true
       head_sha:
         description: Expected pull request head commit SHA (optional)
+      no_cherry_pick:
+        description: The PR is already merged (with the button); only add its bottles
+        type: boolean
+        default: false
 
 permissions: {}
 
@@ -45,14 +49,20 @@ jobs:
           HOMEBREW_GIT_COMMITTER_EMAIL: ${{ steps.git_setup.outputs.email }}
           HEAD_SHA: ${{ inputs.head_sha }}
           PULL_REQUEST: ${{ inputs.pull_request }}
+          NO_CHERRY_PICK: ${{ inputs.no_cherry_pick }}
         run: |
+          args=(--debug --retain-bottle-dir --tap="$GITHUB_REPOSITORY")
           if [[ -n "$HEAD_SHA" ]]
           then
-            brew pr-pull --debug --retain-bottle-dir --tap="$GITHUB_REPOSITORY" --head-sha="$HEAD_SHA" \
-              "$PULL_REQUEST"
-          else
-            brew pr-pull --debug --retain-bottle-dir --tap="$GITHUB_REPOSITORY" "$PULL_REQUEST"
+            args+=(--head-sha="$HEAD_SHA")
           fi
+          # A PR merged with the button already has its commits on main, and
+          # cherry-picking them again fails; this adds only the bottle commit.
+          if [[ "$NO_CHERRY_PICK" == true ]]
+          then
+            args+=(--no-cherry-pick)
+          fi
+          brew pr-pull "${args[@]}" "$PULL_REQUEST"
 
       - name: Generate build provenance
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
