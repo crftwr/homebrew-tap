@@ -58,3 +58,35 @@ jobs:
         with:
           name: bottles_${{ matrix.os }}
           path: '*.bottle.*'
+
+  # The bump PRs are opened with the owner's own token, and GitHub never notifies
+  # anyone of their own actions, so a green bump PR would sit unnoticed. This
+  # comment comes from github-actions[bot], so the mention reaches the owner.
+  notify:
+    needs: test-bot
+    if: >-
+      github.event_name == 'pull_request' &&
+      startsWith(github.head_ref, 'bump-') &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Tell the owner the PR is ready
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          OWNER: ${{ github.repository_owner }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          files="$(gh pr diff "$PR" --name-only)"
+          if grep -q '^Formula/' <<<"$files"; then
+            # Merging with the button publishes no bottles: brew pr-pull merges
+            # the PR itself and adds the bottle block.
+            body="$(printf '@%s Bottles are built. Publish them with `brew pr-pull`, which also merges this PR, so do not press Merge:\n\n```\ngh workflow run publish.yml -R %s -f pull_request=%s -f head_sha=%s\n```\n' \
+              "$OWNER" "$GH_REPO" "$PR" "$HEAD_SHA")"
+          else
+            body="$(printf '@%s Checks passed. No formula changed, so there are no bottles to publish: merge this PR.\n' "$OWNER")"
+          fi
+          gh pr comment "$PR" --body "$body"
