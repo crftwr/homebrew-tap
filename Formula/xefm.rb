@@ -3,10 +3,9 @@ class Xefm < Formula
 
   desc "Dual-pane file manager for the terminal"
   homepage "https://github.com/crftwr/xefm"
-  url "https://files.pythonhosted.org/packages/c8/8b/7f62bbe8d18ce3de03d32535f06dea930c429db3ed2ead653ab1a7e18298/xefm-1.10.0.tar.gz"
-  sha256 "ab814f4f59610fcbb3a4d006813f06498a0956f69a345ba9700e0c1faf742cdf"
+  url "https://files.pythonhosted.org/packages/bb/69/80e4c46b589efd4d5d046480baa7df9bfcb5526b39be80416d3f1475de71/xefm-1.10.1.tar.gz"
+  sha256 "05c972d86cf3489787be6f8763d77a376ebe6bc1341e0550e37279db71c341bd"
   license "MIT"
-  revision 1
 
   bottle do
     root_url "https://github.com/crftwr/homebrew-tap/releases/download/xefm-1.10.0_1"
@@ -77,8 +76,8 @@ class Xefm < Formula
   end
 
   resource "puikit" do
-    url "https://files.pythonhosted.org/packages/82/85/fc5f2af26cd18c2e7442cc54490e877baa8f10c913902dbd9af0f5e264ef/puikit-1.14.0.tar.gz"
-    sha256 "4d67e60c3c84c657633b572716d5fcadd2bc2257a672b1f5d97a31a2d08f1de5"
+    url "https://files.pythonhosted.org/packages/e3/ad/b7462f5d72e8cfede60f4ab69d965328a3892cc7d39e3d76b29c563328ea/puikit-1.15.2.tar.gz"
+    sha256 "fa7902b4ba62af6e1b3baaeb7e3756d2ea7f3f0a6743b21d44c72dc3fed36abd"
   end
 
   resource "pygments" do
