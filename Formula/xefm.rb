@@ -14,6 +14,9 @@ class Xefm < Formula
   end
 
   depends_on "libarchive"
+  # numpy lets Find Similar Files group a large video library in minutes
+  # rather than an hour (similar-files 0.4.0 and later use it when present).
+  depends_on "numpy"
   depends_on "pillow"
   depends_on "python@3.14"
 
@@ -41,7 +44,7 @@ class Xefm < Formula
     end
   end
 
-  # pillow comes from its formula; those PyObjC frameworks serve only the
+  # pillow and numpy come from their formulae; those PyObjC frameworks serve only the
   # desktop backend (the cask's job); the rest are Windows-only. PyObjC Core,
   # Cocoa and truststore are kept by hand in the on_macos block above, which
   # regeneration leaves alone.
