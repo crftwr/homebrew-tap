@@ -1,6 +1,6 @@
 cask "xefm" do
-  version "1.12.0"
-  sha256 "9d509e5a9cbdea9bf67a5952a99494349f00a3952edf34d120b05b0eb9e541d9"
+  version "1.13.0"
+  sha256 "0d4ec2574ec56ec4601934a83c3f3bbddb7be3c4c1a7cb8aff362d6c38be4371"
 
   url "https://github.com/crftwr/xefm/releases/download/v#{version}/XeFM-#{version}-macos.dmg"
   name "XeFM"
@@ -13,7 +13,7 @@ cask "xefm" do
   end
 
   depends_on arch: :arm64
-  depends_on macos: :monterey
+  depends_on macos: :sonoma
 
   app "XeFM.app"
 
