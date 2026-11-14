@@ -86,7 +86,7 @@ jobs:
             # the PR itself and adds the bottle block.
             nl=$'\n'
             fence="\`\`\`"
-            body="@$OWNER Bottles are built. Publish them with \`brew pr-pull\`, which also merges this PR, so do not press Merge:${nl}${nl}${fence}${nl}gh workflow run publish.yml -R $GH_REPO -f pull_request=$PR -f head_sha=$HEAD_SHA${nl}${fence}"
+            body="@$OWNER Bottles are built. auto-publish.yml now starts \`brew pr-pull\` (publish.yml), which publishes them and merges this PR, so do not press Merge. If no publish run appears, start it by hand:${nl}${nl}${fence}${nl}gh workflow run publish.yml -R $GH_REPO -f pull_request=$PR -f head_sha=$HEAD_SHA${nl}${fence}"
           elif grep -q '^Casks/' <<<"$files"; then
             body="@$OWNER Checks passed. No formula changed, so there are no bottles to publish: merge this PR."
           else

@@ -1,0 +1,61 @@
+# Publishes a formula bump's bottles as soon as its test-bot run passes, by
+# starting publish.yml (brew pr-pull) for it. That used to wait for the owner
+# to read the notify comment and run the command by hand.
+#
+# It starts from workflow_run, not from a job inside tests.yml: pr-pull refuses
+# while the PR's newest test-bot run is still in progress, and a job inside
+# that run would always see it in progress.
+#
+# Only a PR from this repository's own `bump-*` branch that changes a formula
+# is published, and only at the commit test-bot passed on: publish.yml gets
+# that head SHA, so a push after the run makes pr-pull refuse instead of
+# publishing untested bottles. Cask PRs have no bottles and are still merged by
+# hand. A workflow_dispatch started with GITHUB_TOKEN does run (it is one of
+# the two events GitHub exempts), so no extra token is needed.
+name: auto-publish
+
+on:
+  workflow_run:
+    workflows: [brew test-bot]
+    types: [completed]
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash -xeuo pipefail {0}
+
+jobs:
+  dispatch:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      startsWith(github.event.workflow_run.head_branch, 'bump-') &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Start brew pr-pull for the PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          pr="$(gh pr list --state open --head "$BRANCH" --json number,headRefOid \
+            --jq ".[] | select(.headRefOid == \"$HEAD_SHA\") | .number")"
+          if [[ -z "$pr" ]]
+          then
+            echo "No open PR from $BRANCH at $HEAD_SHA (closed, or pushed to since): nothing to publish"
+            exit 0
+          fi
+          if ! gh pr diff "$pr" --name-only | grep -q '^Formula/'
+          then
+            echo "#$pr changes no formula: no bottles to publish"
+            exit 0
+          fi
+          gh workflow run publish.yml -f pull_request="$pr" -f head_sha="$HEAD_SHA"
+          echo "Started publish.yml for #$pr at $HEAD_SHA"
