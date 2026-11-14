@@ -9,6 +9,12 @@
 # formula on main stays behind PyPI meanwhile, and a second bump-formula-pr
 # would only fail pushing over the open PR's branch.
 #
+# The PR is opened with `brew bump-formula-pr`, not `brew bump`. `brew bump`
+# counts any PR titled "xefm <version>", merged ones included, as a duplicate
+# and quietly skips; the release-day cask PR carries that same title, so every
+# formula bump after 1.10.1 was skipped that way. bump-formula-pr only
+# counts PRs that touch Formula/<name>.rb.
+#
 # It only opens the PR. The PR's own CI (tests.yml) builds the bottles, and
 # publishing them is still `brew pr-pull` (publish.yml), run by hand. Casks are
 # not bumped here: the release bumps them the same day, from the DMG.
@@ -49,10 +55,23 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           python3 - <<'EOF'
-          import datetime, json, os, pathlib, re, urllib.request
+          import datetime, json, os, pathlib, re, time, urllib.error, urllib.request
 
           # formula file -> PyPI project
           FORMULAE = {"xefm": "xefm"}
+
+          def fetch_json(req):
+              # A single dropped TLS handshake to PyPI failed a whole run
+              # (2026-11-14), so retry a few times before giving up.
+              for attempt in range(4):
+                  try:
+                      with urllib.request.urlopen(req, timeout=30) as r:
+                          return json.load(r)
+                  except (urllib.error.URLError, TimeoutError) as e:
+                      if isinstance(e, urllib.error.HTTPError) or attempt == 3:
+                          raise
+                      print(f"retrying after: {e}")
+                      time.sleep(15 * (attempt + 1))
 
           def open_pr(branch):
               owner = os.environ["REPO"].split("/")[0]
@@ -61,16 +80,14 @@ jobs:
                   f"?state=open&head={owner}:{branch}",
                   headers={"Authorization": f"Bearer {os.environ['GH_TOKEN']}",
                            "Accept": "application/vnd.github+json"})
-              with urllib.request.urlopen(req) as r:
-                  pulls = json.load(r)
+              pulls = fetch_json(req)
               return pulls[0]["html_url"] if pulls else None
 
           due = []
           for name, project in FORMULAE.items():
               text = pathlib.Path(f"Formula/{name}.rb").read_text()
               current = re.search(rf"/{project}-([0-9][^/]*?)\.tar\.gz", text).group(1)
-              with urllib.request.urlopen(f"https://pypi.org/pypi/{project}/json") as r:
-                  info = json.load(r)
+              info = fetch_json(f"https://pypi.org/pypi/{project}/json")
               latest = info["info"]["version"]
               if latest == current:
                   print(f"{name}: {current} is current")
@@ -93,7 +110,7 @@ jobs:
                   print(f"{name}: {latest} already has an open PR, {pr}")
                   continue
               print(f"{name}: {current} -> {latest} is due")
-              due.append(f"crftwr/tap/{name}")
+              due.append(f"{name}={latest}")
           with open(os.environ["GITHUB_OUTPUT"], "a") as out:
               out.write(f"formulae={' '.join(due)}\n")
           EOF
@@ -125,8 +142,16 @@ jobs:
         uses: Homebrew/actions/git-user-config@c262868c096d909fc278daa87ed9772967331ea3 # 2026.11.02.1
 
       - name: Open the bump PR
-        uses: Homebrew/actions/bump-packages@c262868c096d909fc278daa87ed9772967331ea3 # 2026.11.02.1
-        with:
-          token: ${{ secrets.HOMEBREW_TAP_BUMP_TOKEN }}
-          formulae: ${{ needs.check.outputs.formulae }}
-          fork: false
+        env:
+          FORMULAE: ${{ needs.check.outputs.formulae }}
+          HOMEBREW_DEVELOPER: "1"
+          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.HOMEBREW_TAP_BUMP_TOKEN }}
+        run: |
+          # FORMULAE is "name=version ...", from the check job.
+          read -r -a bumps <<<"$FORMULAE"
+          for bump in "${bumps[@]}"; do
+            brew bump-formula-pr "crftwr/tap/${bump%%=*}" \
+              --version="${bump#*=}" \
+              --no-fork --no-browse \
+              --message="Created by autobump.yml"
+          done
