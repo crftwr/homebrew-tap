@@ -16,7 +16,7 @@
 # counts PRs that touch Formula/<name>.rb.
 #
 # It only opens the PR. The PR's own CI (tests.yml) builds the bottles, and
-# publishing them is still `brew pr-pull` (publish.yml), run by hand. Casks are
+# once it passes, auto-publish.yml starts `brew pr-pull` (publish.yml). Casks are
 # not bumped here: the release bumps them the same day, from the DMG.
 #
 # The PR is opened with HOMEBREW_TAP_BUMP_TOKEN, a fine-grained token for this
