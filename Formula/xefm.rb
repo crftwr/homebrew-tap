@@ -3,8 +3,8 @@ class Xefm < Formula
 
   desc "Dual-pane file manager for the terminal"
   homepage "https://github.com/crftwr/xefm"
-  url "https://files.pythonhosted.org/packages/4c/c3/7d0be6ab0f9dbee9ad02e4505d582bf1adbefd84f242a920fb5d2452e533/xefm-1.15.1.tar.gz"
-  sha256 "23b691d59dfce78686e607649d3ebebcc36e6f8dbb55f5bfba430e32ae08fcae"
+  url "https://files.pythonhosted.org/packages/a0/98/a71cb9ed05cbfe01bb3dce0b559b243c44ad6780638d2f4eed67ea1a8dbe/xefm-1.16.0.tar.gz"
+  sha256 "411f7708f9ebe0b2edd317fd613d44101abf5d47f2acc35a4d78659a8c236b5c"
   license "MIT"
 
   bottle do
@@ -54,13 +54,13 @@ class Xefm < Formula
   ]
 
   resource "boto3" do
-    url "https://files.pythonhosted.org/packages/58/ab/c2d0e6b543e718af9b963e980f9e72d918c2b889cb2cc3749999f63f14f3/boto3-1.44.2.tar.gz"
-    sha256 "70c02826640da17c15067033af01667059dde5e86057c2d1227cd8523c2f24dd"
+    url "https://files.pythonhosted.org/packages/58/f3/625dd5a18c17e703f10029e16ccd991802e784b27cc627045f16d60a5d4c/boto3-1.44.3.tar.gz"
+    sha256 "bba566b5cba78db05c5f6c44d219c8f6fb2cd2b923106f767289e4cd0b87b093"
   end
 
   resource "botocore" do
-    url "https://files.pythonhosted.org/packages/5b/fa/5cc188196076a432700671ef36c63fab463f41919b7a1440de906247bb16/botocore-1.44.2.tar.gz"
-    sha256 "39da314d7bab66e9da9af5531445d237beaeeab1fce0ed034bb6315d480b85ce"
+    url "https://files.pythonhosted.org/packages/03/e8/130935f123174b900f55fef077c33af43825e5b68fe963bcc1fc3e4634eb/botocore-1.44.3.tar.gz"
+    sha256 "44d86fff55ce2d014bd72183ebc164b21b36598253b8234d4f59e8600e09b8b3"
   end
 
   resource "doc-files" do
@@ -79,8 +79,8 @@ class Xefm < Formula
   end
 
   resource "puikit" do
-    url "https://files.pythonhosted.org/packages/ef/c4/fde8cb5d7962351bc65f0992631a72172351c073974e2faf6fdd410ed70b/puikit-1.25.0.tar.gz"
-    sha256 "fb2594d454f66ffbd52b330e7738490fbf67ae844f47ca39cfe060e70d7c5a26"
+    url "https://files.pythonhosted.org/packages/c7/6a/a3676a9294a6b9118163634ad8f0440e7ae8986c1f86bdbae5b683e2bacb/puikit-1.26.0.tar.gz"
+    sha256 "9f85ad82ea7ff6042ec33516c60c8e34cbd074034237e971a4e11a4f547b6e63"
   end
 
   resource "pygments" do
