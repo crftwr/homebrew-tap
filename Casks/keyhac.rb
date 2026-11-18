@@ -1,6 +1,6 @@
 cask "keyhac" do
-  version "2.10.0"
-  sha256 "4b15e8b895138dfa7d4002ea0a8ca14a2887ae1bd6723421a62bf5e162f6c403"
+  version "2.10.1"
+  sha256 "dc1a96598048d508e885cbba0cb0d82759c46dde810ebb1f7c1dcc6aea1806c9"
 
   url "https://github.com/crftwr/keyhac/releases/download/v#{version}/Keyhac-#{version}-macos.dmg"
   name "Keyhac"
