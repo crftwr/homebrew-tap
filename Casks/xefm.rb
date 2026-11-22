@@ -1,6 +1,6 @@
 cask "xefm" do
-  version "1.17.0"
-  sha256 "9e8c7a8eeab3da2fc11df660f092a7db02ad6dd1a4478fbf019ff5c2881a3b9f"
+  version "1.17.1"
+  sha256 "b96b805c280e7739d8a82cc364317d75013cd63f0336da6f5594ece11a0d0ffe"
 
   url "https://github.com/crftwr/xefm/releases/download/v#{version}/XeFM-#{version}-macos.dmg"
   name "XeFM"
