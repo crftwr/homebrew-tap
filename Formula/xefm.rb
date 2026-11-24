@@ -3,8 +3,8 @@ class Xefm < Formula
 
   desc "Dual-pane file manager for the terminal"
   homepage "https://github.com/crftwr/xefm"
-  url "https://files.pythonhosted.org/packages/a0/98/a71cb9ed05cbfe01bb3dce0b559b243c44ad6780638d2f4eed67ea1a8dbe/xefm-1.16.0.tar.gz"
-  sha256 "411f7708f9ebe0b2edd317fd613d44101abf5d47f2acc35a4d78659a8c236b5c"
+  url "https://files.pythonhosted.org/packages/da/85/b2d64f7c025e06c5b3dee586aff1bcadb94688efbd4927a918e4de5ea6ee/xefm-1.17.1.tar.gz"
+  sha256 "95020e2c1edba933d07b76d2c5f42992ae4e91c008d8c57bc88237a7d5021656"
   license "MIT"
 
   bottle do
@@ -54,13 +54,13 @@ class Xefm < Formula
   ]
 
   resource "boto3" do
-    url "https://files.pythonhosted.org/packages/58/f3/625dd5a18c17e703f10029e16ccd991802e784b27cc627045f16d60a5d4c/boto3-1.44.3.tar.gz"
-    sha256 "bba566b5cba78db05c5f6c44d219c8f6fb2cd2b923106f767289e4cd0b87b093"
+    url "https://files.pythonhosted.org/packages/24/43/993eec3594eab145ec751af0ef1dadbad0beb01b304b99d7ed0b68c31a71/boto3-1.44.9.tar.gz"
+    sha256 "da4199076833547445a7181e38e833f476808142df95084b2b46c8b2a107aa66"
   end
 
   resource "botocore" do
-    url "https://files.pythonhosted.org/packages/03/e8/130935f123174b900f55fef077c33af43825e5b68fe963bcc1fc3e4634eb/botocore-1.44.3.tar.gz"
-    sha256 "44d86fff55ce2d014bd72183ebc164b21b36598253b8234d4f59e8600e09b8b3"
+    url "https://files.pythonhosted.org/packages/04/10/cf5cb95dee4b956eb785e5225aa47054872bbcf263241e926fa796c388ce/botocore-1.44.9.tar.gz"
+    sha256 "1f783e0b31f0053f41f4239b7a7e2e73957f25cdc6b2f45d113f1b575a4db10b"
   end
 
   resource "doc-files" do
@@ -79,8 +79,8 @@ class Xefm < Formula
   end
 
   resource "puikit" do
-    url "https://files.pythonhosted.org/packages/c7/6a/a3676a9294a6b9118163634ad8f0440e7ae8986c1f86bdbae5b683e2bacb/puikit-1.26.0.tar.gz"
-    sha256 "9f85ad82ea7ff6042ec33516c60c8e34cbd074034237e971a4e11a4f547b6e63"
+    url "https://files.pythonhosted.org/packages/81/31/c3e399d39941d0e65914e919998de622b07084967df8e0bd532deb3be1ab/puikit-1.31.0.tar.gz"
+    sha256 "95c880b925831b607685ce5dfff0d3e5a767ffb2d23fbfea50b494c8837f9aaa"
   end
 
   resource "pygments" do
@@ -94,8 +94,8 @@ class Xefm < Formula
   end
 
   resource "pypdf" do
-    url "https://files.pythonhosted.org/packages/60/d3/367aa9baefaededd3321cde46bbcb9f008bb51cef3a6b745608352a99534/pypdf-7.1.0.tar.gz"
-    sha256 "ca3fa902369e98a6d2cb7b56396de902b72ef9bb3c1e8706c1bfc7d8bd0cf0d7"
+    url "https://files.pythonhosted.org/packages/96/5f/f41984a8150ec37c6ee50fa6fa1868d065337b65ba510a155848b2ce0b62/pypdf-7.1.1.tar.gz"
+    sha256 "2eff4e2fc5fb22a6d6711e6f1166cdc9ab5765d90cd0d77dfea3f4aa91a27b1d"
   end
 
   resource "python-dateutil" do
@@ -124,8 +124,8 @@ class Xefm < Formula
   end
 
   resource "watchdog" do
-    url "https://files.pythonhosted.org/packages/e2/55/087e45c2a3ed8223bc9f30d6b65f051de35513cfc30c989c2b1a14bf862e/watchdog-7.1.0.tar.gz"
-    sha256 "d3861e255416f49a1384474cb2efa097de165fb330d4c5432ce6708b509ed922"
+    url "https://files.pythonhosted.org/packages/33/d3/38e18c9559b96fca53df98979e72cafcd498aba41b57f0830fc31008ffc2/watchdog-7.1.1.tar.gz"
+    sha256 "d7dc3bf0c3417c002ee976e958479c54d8ca18cbb3532fadbe69511fa389da15"
   end
 
   def install
